@@ -55,9 +55,53 @@ select * from tb_funcionarios where nome NOT LIKE "%ari%"; -- dentro do nome NÃ
  /*trabalhando com order by e limit*/
  -- OBS: Por padrão a ordenação no MYSQL é sempre ASCEDENTE, LOGO SE NÃO QUISER NÃO PRECISA ESPEFICAR ORDENAÇÃO ASCENDENTE
  -- order by e limit são sempre o útimo comando da instrução select
+ 
  select * from tb_funcionarios order by nome; -- ordenando pela coluna nome
  select * from tb_funcionarios order by 5; -- ordenando pela posição de coluna na tabela(neste caso pela admimissao)
 select * from tb_funcionarios order by salario DESC; -- ordenando pela coluna salario de forma descendente
 select * from tb_funcionarios order by salario DESC, nome ASC; -- ordenando pela coluna salario de forma descendente E pela coluna nome de forma ascendente
 select * from tb_funcionarios order by salario DESC LIMIT 5; -- ordenando pela coluna salario E LIMITANDO o número de registros trazidos
 select * from tb_funcionarios LIMIT 2, 5; -- LIMITANDO o número de registros trazidos e especificando por qual registro a busca vai começar
+
+/* constraints */
+drop table tb_funcionarios;
+drop table tb_pessoas;
+show tables;
+
+create table tb_pessoas(
+
+	idpessoa int not null auto_increment,
+    desnome varchar(256) not null,
+    dtcadastro timestamp not null default current_timestamp(),
+    CONSTRAINT PK_pessoas PRIMARY KEY (idpessoa)
+) ENGINE = InnoDB;
+
+create table tb_funcionarios(
+
+	idfuncionario int not null auto_increment,
+	idpessoa int not null,
+	vlsalario decimal(10,2) not null default 1000.00,
+	dtadmissao date not null,
+    constraint PK_funcionarios primary key (idfuncionario),
+    constraint FK_funcionario_pessoas foreign key(idpessoa)
+		references tb_pessoas (idpessoa)
+) ENGINE = InnoDB;
+
+desc tb_funcionarios;
+
+INSERT INTO tb_pessoas values(null, "João", null);
+select * from tb_pessoas;
+
+INSERT INTO tb_funcionarios values(null, 2,0, current_date());
+select * from tb_funcionarios;
+
+/* joins */
+desc tb_funcionarios;
+desc tb_pessoas;
+
+select * from tb_funcionarios funcionarios
+inner join tb_pessoas pessoas on funcionarios.idpessoa = pessoas.idpessoa; -- trazendo todas as colunas de ambas as tabelas
+
+select desnome, vlsalario from tb_funcionarios
+inner join tb_pessoas USING(idpessoa); -- utilizamos a cláusula USING quando o campo que unirá as duas tableas terá o mesmo nome, assim escrevemos menos
+-- OBS: Diferente de quando usamos o ON, o USING não irá trazer o campo que une as tabelas duas vezes, é um detalhe que não afeta a consulta mas que deve ser lembrado 
