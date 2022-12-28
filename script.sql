@@ -105,3 +105,39 @@ inner join tb_pessoas pessoas on funcionarios.idpessoa = pessoas.idpessoa; -- tr
 select desnome, vlsalario from tb_funcionarios
 inner join tb_pessoas USING(idpessoa); -- utilizamos a cláusula USING quando o campo que unirá as duas tableas terá o mesmo nome, assim escrevemos menos
 -- OBS: Diferente de quando usamos o ON, o USING não irá trazer o campo que une as tabelas duas vezes, é um detalhe que não afeta a consulta mas que deve ser lembrado 
+
+
+/*EXEMPLOS DE SUBQUERYS*/
+
+/*
+podemos usar o subquery para usar o resultado de uma consulta como view(tabela) para uma segunda consulta
+detalhe que o campo que faz join não pode ser duplicado ou gerará erro, por isso eu trouxe apena um campo de codigo na subquerye
+neste exemplo eu utilizei uma consulta com base numa subconsulta
+*/
+select * from (
+select a.idpessoa as codigo, vlsalario as salario,desnome as nome from tb_funcionarios a
+inner join tb_pessoas b on a.idpessoa = b.idpessoa) as tb1
+where tb1.salario > 2000;
+
+select * from tb_pessoas a
+where not exists(select 1 from tb_funcionarios b where b.idpessoa = a.idpessoa);
+
+/*
+subquery que traz registros de pessoas que estão apenas na tbpessoas e não são funcionarios
+*/
+select * from tb_pessoas a
+left join tb_funcionarios b on a.idpessoa = b.idpessoa 
+where not exists(select idpessoa from tb_pessoas where b.idpessoa = a.idpessoa);
+
+select b.idpessoa as codigo from tb_pessoas a
+inner join tb_funcionarios b on a.idpessoa = b.idpessoa;
+
+select idpessoa from tb_pessoas where desnome like "m%";
+
+/*
+deletando registros de acordo com resultado da subquery onde o campo where
+é preenchido pelo select
+*/
+delete from tb_pessoas where idpessoa in(
+select idpessoa from tb_pessoas where desnome like "m%"
+);
