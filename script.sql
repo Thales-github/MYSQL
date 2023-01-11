@@ -141,3 +141,12 @@ deletando registros de acordo com resultado da subquery onde o campo where
 delete from tb_pessoas where idpessoa in(
 select idpessoa from tb_pessoas where desnome like "m%"
 );
+
+/*
+exemplo de group by
+Primeiro usamos uma função que agrupa os dados de um campo como SUM()
+e no fim da intrução usamos o group by para dizer por qual campo iremos (JUNTAR) os dados
+*/
+select ps.desnome, pd.dtpedido, sum(pd.vlpedido) as total_pedidos from tb_pessoas ps
+inner join tb_pedidos pd on ps.idpessoa = pd.idpessoa
+group by ps.desnome,pd.dtpedido;
